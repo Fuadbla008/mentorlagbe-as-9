@@ -39,29 +39,22 @@ For Vercel/Netlify, add the same four variables to the project's environment set
 
 ## 2. Fixing the `/payments/return` error
 
-If checkout finishes and the browser shows:
+If checkout finishes and the browser lands on `http://localhost:5000/payments/return?session_id=...` (or shows `No route for GET /payments/return`), the API built Stripe's `success_url` from an unset `API_URL`, which fell back to `http://localhost:5000`. This is a backend environment problem, not a frontend route problem.
 
-```json
-{"success":false,"message":"No route for GET /payments/return."}
-```
+The flow is: Stripe → `GET /api/payments/return?session_id=...` on the backend → backend verifies the paid session → 302 to `CLIENT_URL/payment/success?plan=...&amount=...`.
 
-the API is building the Stripe return URL against **its own origin** instead of your frontend origin. This is a backend environment problem, not a frontend route problem.
-
-On the **Express server** (Render → Environment), set the client/frontend origin variable used by your checkout code to your deployed frontend URL, for example:
+On the **Express server** (Render → Environment), set these exact variables:
 
 ```env
-CLIENT_URL=https://your-frontend.vercel.app
+BETTER_AUTH_URL=https://mentorlagbe-as-9-server.onrender.com
+API_URL=https://mentorlagbe-as-9-server.onrender.com
+CLIENT_URL=https://mentorlagbe-client.vercel.app
+CORS_ORIGIN=https://mentorlagbe-client.vercel.app
 ```
 
-Depending on the server code the name may be `FRONTEND_URL`, `CLIENT_BASE_URL` or `APP_URL` — check `src/routes/payment.routes.js` in the server repo and use the exact name it reads. It must be the **frontend** origin, with no `/api` suffix and no trailing slash.
+All four must be **origins** — no `/api` suffix, no trailing slash. `render.yaml` in the server repo now ships these values, and `src/config/env.js` falls back to them in production, so a fresh deploy works even if the dashboard values are missing.
 
-The Stripe success URL should then be:
-
-```
-https://your-frontend.vercel.app/payments/return?session_id={CHECKOUT_SESSION_ID}
-```
-
-This repository now provides that route. `src/app/(site)/payments/return/page.js` reads `session_id`, calls `GET /api/payments/return?session_id=...`, follows any backend redirect, and forwards to `/payment/success?plan=...&amount=...`.
+This repository also provides `/payments/return?session_id=...` as a fallback. `src/app/(site)/payments/return/page.js` reads `session_id`, calls `GET /api/payments/return?session_id=...`, follows any backend redirect, and forwards to `/payment/success?plan=...&amount=...`.
 
 Also make sure these are set on the server for checkout to work at all:
 
@@ -97,7 +90,7 @@ https://mentorlagbe-as-9-server.onrender.com/api/payments/webhook
 
 4. Add the same variable to your hosting provider and redeploy.
 
-The button uses Google Identity Services. Google verifies the ID token in-browser; the frontend bridges the verified email/name to the existing `/auth/signin` and `/auth/signup` endpoints with a password derived from Google's immutable subject ID. First sign-in creates a free student account automatically.
+The button uses Google Identity Services. Google verifies the ID token in-browser; the frontend bridges the verified email/name/picture to the existing `/auth/signin` and `/auth/signup` endpoints with a password derived from Google's immutable subject ID. First sign-in creates a free student account automatically, and the Google profile picture is saved as the user's avatar through `PUT /profile` (a user-uploaded picture is never overwritten). For this to load, `https://lh3.googleusercontent.com` must remain reachable by the browser.
 
 If the email already exists with a different password, Google sign-in cannot link it automatically — sign in with the original password instead, or add account-linking on the server later.
 

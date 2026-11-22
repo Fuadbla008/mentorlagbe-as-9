@@ -167,34 +167,50 @@ export function AppProvider({ children }) {
     };
   }, [refresh, saveToken]);
 
+  // Google's verified picture URL is applied after auth because /auth/signup
+  // always generates an initials avatar. Keep a picture the user uploaded.
+  const applyPicture = useCallback(async (picture, resolvedUser) => {
+    if (!picture || !resolvedUser) return resolvedUser;
+    const current = String(resolvedUser.image || "");
+    if (current && !/dicebear|initials/i.test(current)) return resolvedUser;
+    try {
+      const body = await updateProfileRequest({ image: picture });
+      return body.user || { ...resolvedUser, image: picture };
+    } catch {
+      return resolvedUser;
+    }
+  }, []);
+
   const signIn = useCallback(
-    async ({ email, password }) => {
+    async ({ email, password, picture }) => {
       try {
         const body = await signInRequest({ email, password });
         saveToken(body.token);
-        setUser(body.user || null);
-        await refresh(body.user);
-        return { ...ok(body.message || "Signed in successfully."), user: body.user };
+        const nextUser = await applyPicture(picture, body.user || null);
+        setUser(nextUser);
+        await refresh(nextUser);
+        return { ...ok(body.message || "Signed in successfully."), user: nextUser };
       } catch (error) {
         return fail(errorMessage(error, "Unable to sign in. Please try again."));
       }
     },
-    [refresh, saveToken],
+    [applyPicture, refresh, saveToken],
   );
 
   const signUp = useCallback(
-    async ({ name, email, password, role }) => {
+    async ({ name, email, password, role, picture }) => {
       try {
         const body = await signUpRequest({ name, email, password, role });
         saveToken(body.token);
-        setUser(body.user || null);
-        await refresh(body.user);
-        return { ...ok(body.message || "Your account is ready!"), user: body.user };
+        const nextUser = await applyPicture(picture, body.user || null);
+        setUser(nextUser);
+        await refresh(nextUser);
+        return { ...ok(body.message || "Your account is ready!"), user: nextUser };
       } catch (error) {
         return fail(errorMessage(error, "Unable to create your account. Please try again."));
       }
     },
-    [refresh, saveToken],
+    [applyPicture, refresh, saveToken],
   );
 
   // Kept for backwards compatibility; the live login form hides demo shortcuts.

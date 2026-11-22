@@ -203,13 +203,14 @@ export default function AuthForm({ mode = "sign-in" }) {
       setBusy(true);
       try {
         const password = googlePassword(profile.sub);
-        let result = await signIn({ email: profile.email, password });
+        let result = await signIn({ email: profile.email, password, picture: profile.picture });
         if (!result.ok) {
           result = await signUp({
             name: profile.name || profile.email.split("@")[0],
             email: profile.email,
             password,
             role: "student",
+            picture: profile.picture,
           });
         }
         finish(result, "student");

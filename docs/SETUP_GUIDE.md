@@ -22,7 +22,7 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 | `NEXT_PUBLIC_IMGBB_KEY` | Dev-only fallback. Keep **empty** in production. |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Enables the Google button. Empty shows a setup hint. |
 
-`.env.example` is the committed template. **No ImgBB, Stripe, JWT or MongoDB secret ever belongs in the frontend.**
+`.env.example` is the committed template. **No ImgBB, Stripe, JWT or MongoDB secret ever belongs in the frontend.** The Google client ID is intentionally public and safe to commit; the ImgBB key is not. If an ImgBB key was ever committed, revoke and replace it in ImgBB, and keep the new value only in the backend `.env`.
 
 Local start:
 

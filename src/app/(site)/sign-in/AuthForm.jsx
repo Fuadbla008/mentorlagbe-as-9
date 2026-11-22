@@ -224,14 +224,15 @@ export default function AuthForm({ mode = "sign-in" }) {
 
   return (
     <div className="grid min-h-[calc(100vh-72px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
-      <div className="flex items-center justify-center px-5 py-12 sm:px-10 lg:px-12 xl:px-20">
-        <div className="w-full max-w-md">
+      <div className="relative flex items-center justify-center overflow-hidden px-5 py-12 sm:px-10 lg:px-12 xl:px-20">
+        <div className="pointer-events-none absolute -left-32 top-10 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
+        <div className="animate-fade-up relative w-full max-w-md">
           <div className="mb-8 lg:hidden">
             <Logo />
           </div>
 
           <span className="eyebrow">{isSignUp ? "Join MentorLagbe" : "Welcome back"}</span>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
+          <h1 className="gradient-text mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">
             {isSignUp ? "Create your account" : "Sign in to your account"}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted">

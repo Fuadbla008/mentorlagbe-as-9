@@ -33,7 +33,7 @@ npm run lint
 npm run build
 ```
 
-For Vercel/Netlify, add the same four variables to the project's environment settings and redeploy.
+For Vercel/Netlify, add the same four variables to the project's environment settings and redeploy. **Hosting env vars override `.env.local` at build time** — if `NEXT_PUBLIC_API_URL` is set to `https://mentorlagbe-as-9-server.onrender.com` (without `/api`) on Vercel, sign-in returns 404 and server-side page reads return 500 even though `.env.local` is correct. `src/lib/api.js` now appends `/api` automatically as a safeguard, but the value in the host dashboard should still include it. After changing any env var on Vercel, trigger a **new deployment** — `NEXT_PUBLIC_*` values are baked into the bundle at build time.
 
 ---
 

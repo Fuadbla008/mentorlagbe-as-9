@@ -48,8 +48,8 @@ On the **Express server** (Render → Environment), set these exact variables:
 ```env
 BETTER_AUTH_URL=https://mentorlagbe-as-9-server.onrender.com
 API_URL=https://mentorlagbe-as-9-server.onrender.com
-CLIENT_URL=https://mentorlagbe-client.vercel.app
-CORS_ORIGIN=https://mentorlagbe-client.vercel.app
+CLIENT_URL=https://mentorlagbe-sigma.vercel.app
+CORS_ORIGIN=https://mentorlagbe-sigma.vercel.app
 ```
 
 All four must be **origins** — no `/api` suffix, no trailing slash. `render.yaml` in the server repo now ships these values, and `src/config/env.js` falls back to them in production, so a fresh deploy works even if the dashboard values are missing.

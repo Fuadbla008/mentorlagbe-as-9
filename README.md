@@ -1,6 +1,6 @@
 # MentorLagbe — Smart Tuition & Mentorship Platform
 
-**Live URL:** `https://mentorlagbe-client.vercel.app/` (reference deployment — replace with your deployed URL after publishing this build)
+**Live URL:** `https://mentorlagbe-sigma.vercel.app/`
 
 MentorLagbe is a role-based EdTech frontend that connects students with verified tutors for subject-wise batches and 1-on-1 mentorship. Tutors publish listings, admins moderate them, students search/apply, and Pro plans are sold through Stripe. Built with Next.js App Router, React, Tailwind CSS, better authentication hooks and a seeded demo data layer so every page works before the Express/MongoDB backend is connected.
 

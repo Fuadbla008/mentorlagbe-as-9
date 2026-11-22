@@ -19,42 +19,54 @@ export async function searchTuitions({
   limit = 9,
   sort = "newest",
 } = {}) {
-  const body = await searchTuitionsRequest(
-    { q, subject, classLevel, mode, page, limit, sort },
-    LIVE,
-  );
-  return {
-    items: Array.isArray(body.items) ? body.items : [],
-    total: Number(body.total) || 0,
-    totalPages: Number(body.totalPages) || 1,
-    page: Number(body.page) || 1,
-  };
+  try {
+    const body = await searchTuitionsRequest(
+      { q, subject, classLevel, mode, page, limit, sort },
+      LIVE,
+    );
+    return {
+      items: Array.isArray(body.items) ? body.items : [],
+      total: Number(body.total) || 0,
+      totalPages: Number(body.totalPages) || 1,
+      page: Number(body.page) || 1,
+    };
+  } catch {
+    // A transient API failure must not take down the whole page.
+    return { items: [], total: 0, totalPages: 1, page: page || 1 };
+  }
 }
 
 export async function getFeaturedTuitions(limit = 6) {
-  const items = await getFeaturedTuitionsRequest(limit, LIVE);
-  return Array.isArray(items) ? items : [];
+  try {
+    const items = await getFeaturedTuitionsRequest(limit, LIVE);
+    return Array.isArray(items) ? items : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function getTuitionById(id) {
   if (!id) return null;
   try {
     return await getTuitionByIdRequest(id, LIVE);
-  } catch (error) {
-    if (error?.status === 404) return null;
-    throw error;
+  } catch {
+    return null;
   }
 }
 
 export async function getPlatformStats() {
-  const stats = await getStats(LIVE);
-  return {
-    tutors: Number(stats.tutors) || 0,
-    students: Number(stats.students) || 0,
-    tuitions: Number(stats.tuitions) || 0,
-    applications: Number(stats.applications) || 0,
-    revenue: Number(stats.revenue) || 0,
-  };
+  try {
+    const stats = await getStats(LIVE);
+    return {
+      tutors: Number(stats.tutors) || 0,
+      students: Number(stats.students) || 0,
+      tuitions: Number(stats.tuitions) || 0,
+      applications: Number(stats.applications) || 0,
+      revenue: Number(stats.revenue) || 0,
+    };
+  } catch {
+    return { tutors: 0, students: 0, tuitions: 0, applications: 0, revenue: 0 };
+  }
 }
 
 export function formatFee(amount) {

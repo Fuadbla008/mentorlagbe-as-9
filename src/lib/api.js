@@ -1,8 +1,13 @@
 // Bridge to the deployed Express API. All frontend reads/writes go through here.
 // Never put backend secrets (ImgBB / Stripe keys) in this file.
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
-const UPLOAD_URL = (process.env.NEXT_PUBLIC_UPLOAD_URL || "").replace(/\/$/, "");
+// Normalise at build time. A deployed env value that omits the /api suffix
+// makes every request hit a non-existent route (404 on /auth/signin, 500 on
+// server-side reads), even though the same value works locally with /api.
+const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
+const API_URL = rawApiUrl && !/\/api$/.test(rawApiUrl) ? `${rawApiUrl}/api` : rawApiUrl;
+const rawUploadUrl = (process.env.NEXT_PUBLIC_UPLOAD_URL || "").replace(/\/+$/, "");
+const UPLOAD_URL = rawUploadUrl || (API_URL ? `${API_URL}/upload/image` : "");
 const TOKEN_KEY = "ml_token";
 
 // Exported so payment return URLs can be built without duplicating the env name.

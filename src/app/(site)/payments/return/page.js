@@ -51,7 +51,7 @@ function ReturnHandler() {
 
         const plan = body.plan || body.planName || "Pro";
         const amount = body.amount ?? body.amountTotal ?? "";
-        window.location.assign(
+        router.replace(
           `/payment/success?plan=${encodeURIComponent(plan)}&amount=${encodeURIComponent(String(amount))}`,
         );
       } catch (caught) {

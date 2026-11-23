@@ -20,7 +20,7 @@ No database or API is required for the demo. Data is seeded on first load and pe
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Admin | `admin@mentorlagbe.com` | any 6+ characters (e.g. `admin123`) |
+| Admin | `admin@mentorlagbe.com` | any 6+ characters (e.g. `admin12`) |
 | Tutor | `sadia@mentorlagbe.com` | any 6+ characters |
 | Student | `ayesha@example.com` | any 6+ characters |
 
